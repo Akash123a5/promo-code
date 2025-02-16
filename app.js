@@ -1,6 +1,6 @@
 let subtotal = 100;
-let discount = 0;
-let appliedPromo = false;
+let discount = localStorage.getItem("discount") ? parseFloat(localStorage.getItem("discount")) : 0;
+let appliedPromo = localStorage.getItem("appliedPromo") ? true : false;
 
 function applyPromo() {
     if (appliedPromo) {
@@ -17,13 +17,28 @@ function applyPromo() {
         showMessage("Invalid promo code!", "text-danger");
         return;
     }
-    
+
     let finalTotal = subtotal - discount;
-    document.getElementById("discount").textContent = discount.toFixed(2);
-    document.getElementById("finalTotal").textContent = finalTotal.toFixed(2);
+
+    // লোকাল স্টোরেজে সংরক্ষণ
+    localStorage.setItem("discount", discount);
+    localStorage.setItem("finalTotal", finalTotal);
+    localStorage.setItem("appliedPromo", true);
+
+    updateUI();
     showMessage("Promo code applied successfully!", "text-success");
-    appliedPromo = true;
 }
+
+function updateUI() {
+    let savedDiscount = localStorage.getItem("discount") ? parseFloat(localStorage.getItem("discount")) : 0;
+    let savedFinalTotal = localStorage.getItem("finalTotal") ? parseFloat(localStorage.getItem("finalTotal")) : subtotal;
+
+    document.getElementById("discount").textContent = savedDiscount.toFixed(2);
+    document.getElementById("finalTotal").textContent = savedFinalTotal.toFixed(2);
+}
+
+// পেজ লোড হলে ডিসকাউন্ট দেখানোর জন্য
+document.addEventListener("DOMContentLoaded", updateUI);
 
 function showMessage(message, className) {
     document.getElementById("promoMessage").innerHTML = `<p class="${className} fw-bold">${message}</p>`;
